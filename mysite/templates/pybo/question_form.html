@@ -5,17 +5,7 @@
     <form method='post'>
         {% csrf_token %}
         {% comment %} {{ form.as_p}} <!-- 자동으로 폼을 생성한다. --> {% endcomment %}
-        {% if form.errors %} <!--에러가 있다-->
-        <div class='alert alert-danger' role='alert'>
-            {% for field in form %}
-            {% if field.errors %}
-            <div>
-                <strong>{{ field.label }} </strong> {{ field.errors }}
-            </div>
-            {% endif %}
-            {% endfor %}
-        </div>
-        {% endif %}
+        {% include "form_errors.html" %}
         <div class='mb-3'>
             <label for="subject" class='form-label'>제목</label>
             <input type="text" class='form-control' name='subject' id='subject' value='{{ form.subject.value|default_if_none:"" }}'>
