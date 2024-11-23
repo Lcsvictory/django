@@ -1,16 +1,38 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container my-3">
+    {% if messages %}
+    <div class='alert alert-danger my-3'>
+        {% for message in messages %}
+        <strong>{{ message.tags }}</strong>
+        <ul>
+            <li>{{ message }}</li>
+        </ul>
+        {% endfor %}    
+    </div>
+    {% endif %}
     <h2 class="border=bottom py-2">질문</h2>
     <h2 class="border=bottom py-2">{{question.subject}} </h2>
     <div class="card my-3">
         <div class='card-body'>
             <div class="card-text" style="white-space: pre-line;">{{question.content}} </div>
             <div class='d-flex justify-content-end'>
+                {% if question.modify_date %}
+                <div class="badge bg-light text-dark p-2 text-start mx-3">
+                    <div class="mb-2">수정일시</div>
+                    <div> {{question.modify_date}} </div>
+                </div>
+                {% endif %}
                 <div class='badge bg-light text-dark p-2 text-start'>
                     <div class="mb-2">{{ question.author.username }} {{ question.ip_address }}</div>
                     <div>{{question.create_date}}</div>
                 </div>
+            </div>
+            <div class="my-3">
+                {% if request.user == question.author %}
+                <a href="{% url 'pybo:question_modify' question_id=question.id %}" class="btn btn-sm btn-outline-secondary">수정</a>
+                <a href="javascript:void(0)" class="delete btn btn-sm btn-outline-secondary" data-uri="{% url "pybo:question_delete" question.id %}">삭제</a>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -20,10 +42,22 @@
         <div class='card-body'>
             <div class='card-text' style='white-space: pre-line;'>{{answer.content}} </div>
             <div class='d-flex justify-content-end'>
+                {% if answer.modify_date %}
+                <div class="badge bg-light text-dark p-2 text-start mx-3">
+                    <div class="mb-2">수정일시</div>
+                    <div> {{answer.modify_date}} </div>
+                </div>
+                {% endif %}
                 <div class='badge bg-light text-dark p-2 text-start'>
                     <div class="mb-2">{{ answer.author.username }} {{ answer.ip_address }}</div>
                     <div>{{answer.create_date}}</div>
                 </div>
+            </div>
+            <div class="my-3"> <!--답변수정기능-->
+                {% if request.user == answer.author %}
+                <a href="{% url "pybo:answer_modify" answer_id=answer.id %}" class="btn btn-sm btn-outline-secondary">수정</a>
+                <a href="#" class="delete btn btn-sm btn-outline-secondary" data-uri="{% url "pybo:answer_delete" answer_id=answer.id%}">삭제</a>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -40,3 +74,15 @@
     </form>
 </div>
 {% endblock %}
+{% block script %}
+<script>
+    const delete_elements = document.getElementsByClassName("delete");
+    Array.from(delete_elements).forEach((element) => {
+        element.addEventListener('click', function() {
+            if (confirm("정말로 삭제하시겠습니까?")) {
+                location.href = this.dataset.uri;
+            }
+        })
+    })
+</script>
+{% endblock script %}
