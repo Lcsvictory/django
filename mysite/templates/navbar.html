@@ -20,7 +20,10 @@
                     {% endif %}
                 </li>
                 <li class='nav-item'>
-                    <a class="nav-link" href="#">회원가입</a>
+                    {% if not user.is_authenticated %}
+                    <a class="nav-link" href="{% url "common:signup" %}">회원가입</a>
+                    {% endif %}
+                    
                 </li>
             </ul>
         </div>
